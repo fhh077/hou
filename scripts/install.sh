@@ -353,7 +353,6 @@ install_files() {
     local asset_name="$2"
     local tmp_dir
     tmp_dir="$(mktemp -d)"
-    trap 'rm -rf "$tmp_dir"' EXIT
 
     download_artifact "$version" "$asset_name" "${tmp_dir}/V2bX.zip"
     rm -rf "$INSTALL_DIR"
@@ -366,6 +365,8 @@ install_files() {
             cp "${INSTALL_DIR}/${asset}" "${CONFIG_DIR}/${asset}"
         fi
     done
+
+    rm -rf "$tmp_dir"
 }
 
 main() {
