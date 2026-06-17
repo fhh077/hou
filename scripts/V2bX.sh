@@ -12,6 +12,7 @@ SERVICE_FILE="/etc/systemd/system/${SERVICE_NAME}.service"
 INSTALL_DIR="/usr/local/V2bX"
 CONFIG_DIR="/etc/V2bX"
 CONFIG_FILE="${CONFIG_DIR}/config.json"
+SING_ORIGIN_FILE="${CONFIG_DIR}/sing_origin.json"
 BIN_FILE="${INSTALL_DIR}/V2bX"
 MANAGER_FILE="/usr/bin/V2bX"
 MANAGER_LINK="/usr/bin/v2bx"
@@ -59,6 +60,18 @@ ensure_installed() {
     return 0
 }
 
+ensure_sing_origin_config() {
+    mkdir -p "$CONFIG_DIR"
+    if [[ -f "$SING_ORIGIN_FILE" ]]; then
+        return 0
+    fi
+
+    cat >"$SING_ORIGIN_FILE" <<'EOF'
+{}
+EOF
+    chmod 600 "$SING_ORIGIN_FILE"
+}
+
 show_enable_status() {
     if check_enabled; then
         echo -e "是否开机自启: ${green}是${plain}"
@@ -86,6 +99,7 @@ install_url() {
 
 run_installer() {
     local version_arg=""
+    local installer_url
     if [[ -n "${1:-}" ]]; then
         version_arg="--version '$1'"
     fi
@@ -96,7 +110,8 @@ run_installer() {
         return 1
     fi
 
-    bash -c "bash <(curl -fsSL '$(install_url)') --repo '${V2BX_REPO}' --branch '${V2BX_BRANCH}' ${version_arg}"
+    installer_url="$(install_url)?$(date +%s)"
+    bash -c "bash <(curl -fsSL '${installer_url}') --repo '${V2BX_REPO}' --branch '${V2BX_BRANCH}' ${version_arg}"
 }
 
 install_v2bx() {
@@ -132,6 +147,7 @@ start_v2bx() {
         echo -e "${green}V2bX 已运行，无需重复启动。${plain}"
         return 0
     fi
+    ensure_sing_origin_config || return 1
     systemctl start "${SERVICE_NAME}.service"
     sleep 2
     if check_running; then
@@ -155,6 +171,7 @@ stop_v2bx() {
 
 restart_v2bx() {
     ensure_installed || return 1
+    ensure_sing_origin_config || return 1
     systemctl restart "${SERVICE_NAME}.service"
     sleep 2
     if check_running; then
