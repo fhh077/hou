@@ -17,6 +17,7 @@ SERVICE_NAME="V2bX"
 INSTALL_DIR="/usr/local/V2bX"
 CONFIG_DIR="/etc/V2bX"
 CONFIG_FILE="${CONFIG_DIR}/config.json"
+SING_ORIGIN_FILE="${CONFIG_DIR}/sing_origin.json"
 SERVICE_FILE="/etc/systemd/system/${SERVICE_NAME}.service"
 MANAGER_FILE="/usr/bin/V2bX"
 MANAGER_LINK="/usr/bin/v2bx"
@@ -267,6 +268,18 @@ EOF
     chmod 600 "$CONFIG_FILE"
 }
 
+ensure_sing_origin_config() {
+    if [[ -f "$SING_ORIGIN_FILE" ]]; then
+        return 0
+    fi
+
+    cat >"$SING_ORIGIN_FILE" <<'EOF'
+{}
+EOF
+    chmod 600 "$SING_ORIGIN_FILE"
+    echo -e "${green}已生成默认 sing-box 原始配置: ${SING_ORIGIN_FILE}${plain}"
+}
+
 prepare_config() {
     if [[ -f "$CONFIG_FILE" ]]; then
         echo "保留现有配置: ${CONFIG_FILE}"
@@ -370,6 +383,7 @@ install_files() {
     download_artifact "$version" "$asset_name" "${tmp_dir}/V2bX.zip"
     rm -rf "$INSTALL_DIR"
     mkdir -p "$INSTALL_DIR" "$CONFIG_DIR"
+    ensure_sing_origin_config
     unzip -oq "${tmp_dir}/V2bX.zip" -d "$INSTALL_DIR" || unzip_status=$?
     if [[ "$unzip_status" -gt 1 ]]; then
         echo -e "${red}解压 V2bX 安装包失败，unzip exit code: ${unzip_status}${plain}"
