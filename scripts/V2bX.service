@@ -1,0 +1,17 @@
+[Unit]
+Description=V2bX Service
+After=network-online.target nss-lookup.target
+Wants=network-online.target
+
+[Service]
+User=root
+Group=root
+Type=simple
+LimitNOFILE=999999
+WorkingDirectory=/usr/local/V2bX/
+ExecStart=/usr/local/V2bX/V2bX server -c /etc/V2bX/config.json
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
