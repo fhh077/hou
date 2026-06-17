@@ -15,16 +15,15 @@ dist/SHA256SUMS.txt     # 安装包校验值
 
 ## 一键安装
 
-把 `OWNER/REPO` 换成你的公开仓库名：
 
 ```bash
-bash <(curl -Ls https://raw.githubusercontent.com/OWNER/REPO/main/scripts/install.sh) --repo OWNER/REPO
+bash <(curl -Ls https://raw.githubusercontent.com/fhh077/hou/main/scripts/install.sh) --repo fhh077/hou
 ```
 
-如果你的公开仓库默认分支是 `master`：
+
 
 ```bash
-bash <(curl -Ls https://raw.githubusercontent.com/OWNER/REPO/master/scripts/install.sh) --repo OWNER/REPO --branch master
+bash <(curl -Ls https://raw.githubusercontent.com/fhh077/hou/master/scripts/install.sh) --repo fhh077/hou --branch master
 ```
 
 安装脚本会自动完成：
