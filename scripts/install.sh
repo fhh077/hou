@@ -348,16 +348,35 @@ install_manager() {
     ln -sf "$MANAGER_FILE" "$MANAGER_LINK"
 }
 
+normalize_unzipped_paths() {
+    mkdir -p "${INSTALL_DIR}/scripts"
+
+    if [[ -f "${INSTALL_DIR}/scripts\\V2bX.sh" && ! -f "${INSTALL_DIR}/scripts/V2bX.sh" ]]; then
+        mv "${INSTALL_DIR}/scripts\\V2bX.sh" "${INSTALL_DIR}/scripts/V2bX.sh"
+    fi
+
+    if [[ -f "${INSTALL_DIR}/scripts\\V2bX.service" && ! -f "${INSTALL_DIR}/scripts/V2bX.service" ]]; then
+        mv "${INSTALL_DIR}/scripts\\V2bX.service" "${INSTALL_DIR}/scripts/V2bX.service"
+    fi
+}
+
 install_files() {
     local version="$1"
     local asset_name="$2"
     local tmp_dir
+    local unzip_status=0
     tmp_dir="$(mktemp -d)"
 
     download_artifact "$version" "$asset_name" "${tmp_dir}/V2bX.zip"
     rm -rf "$INSTALL_DIR"
     mkdir -p "$INSTALL_DIR" "$CONFIG_DIR"
-    unzip -oq "${tmp_dir}/V2bX.zip" -d "$INSTALL_DIR"
+    unzip -oq "${tmp_dir}/V2bX.zip" -d "$INSTALL_DIR" || unzip_status=$?
+    if [[ "$unzip_status" -gt 1 ]]; then
+        echo -e "${red}解压 V2bX 安装包失败，unzip exit code: ${unzip_status}${plain}"
+        rm -rf "$tmp_dir"
+        exit 1
+    fi
+    normalize_unzipped_paths
     chmod +x "${INSTALL_DIR}/V2bX"
 
     for asset in geoip.dat geosite.dat dns.json route.json custom_inbound.json custom_outbound.json; do
