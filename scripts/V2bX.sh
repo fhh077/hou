@@ -18,6 +18,7 @@ MANAGER_FILE="/usr/bin/V2bX"
 MANAGER_LINK="/usr/bin/v2bx"
 V2BX_REPO="${V2BX_REPO:-V2BX_REPO_PLACEHOLDER}"
 V2BX_BRANCH="${V2BX_BRANCH:-V2BX_BRANCH_PLACEHOLDER}"
+ERROR_LOG_PATTERN='错误|失败|异常|拒绝|限制|超限|重载|关闭|找不到|不存在|不支持|无效|回滚|error|warn|warning|fatal|panic|limited|reject|failed|failure|node changed|user sync will delete|same user changed|close existing user links|device limit|over.?limit'
 
 if [[ "$V2BX_REPO" == "V2BX_REPO_PLACEHOLDER" ]]; then
     V2BX_REPO="OWNER/REPO"
@@ -204,6 +205,12 @@ show_log() {
     journalctl -u "${SERVICE_NAME}.service" -e --no-pager -f
 }
 
+show_error_log() {
+    ensure_installed || return 1
+    echo -e "${yellow}仅显示异常、拒绝、重载和关闭连接相关日志，按 Ctrl+C 退出。${plain}"
+    journalctl -u "${SERVICE_NAME}.service" -e --no-pager -f | grep --line-buffered -Ei "$ERROR_LOG_PATTERN"
+}
+
 show_version() {
     ensure_installed || return 1
     "$BIN_FILE" version
@@ -254,6 +261,7 @@ V2bX status          查看服务状态
 V2bX enable          设置开机自启
 V2bX disable         取消开机自启
 V2bX log             查看实时日志
+V2bX errlog          查看异常日志
 V2bX version         查看版本
 V2bX uninstall       卸载 V2bX
 V2bX update_shell    更新管理脚本
@@ -278,15 +286,16 @@ show_menu() {
     echo -e "${green}6.${plain} 重启 V2bX"
     echo -e "${green}7.${plain} 查看状态"
     echo -e "${green}8.${plain} 查看日志"
+    echo -e "${green}9.${plain} 查看异常日志"
     echo "------------------------------------------"
-    echo -e "${green}9.${plain} 设置开机自启"
-    echo -e "${green}10.${plain} 取消开机自启"
-    echo -e "${green}11.${plain} 查看版本"
-    echo -e "${green}12.${plain} 更新管理脚本"
+    echo -e "${green}10.${plain} 设置开机自启"
+    echo -e "${green}11.${plain} 取消开机自启"
+    echo -e "${green}12.${plain} 查看版本"
+    echo -e "${green}13.${plain} 更新管理脚本"
     echo "------------------------------------------"
     show_service_status
     echo
-    read -r -p "请输入选择 [0-12]: " num
+    read -r -p "请输入选择 [0-13]: " num
     case "$num" in
         0) edit_config; before_show_menu ;;
         1) install_v2bx; before_show_menu ;;
@@ -297,11 +306,12 @@ show_menu() {
         6) restart_v2bx; before_show_menu ;;
         7) status_v2bx; before_show_menu ;;
         8) show_log ;;
-        9) enable_v2bx; before_show_menu ;;
-        10) disable_v2bx; before_show_menu ;;
-        11) show_version; before_show_menu ;;
-        12) update_shell; before_show_menu ;;
-        *) echo -e "${red}请输入正确的数字 [0-12]。${plain}"; before_show_menu ;;
+        9) show_error_log ;;
+        10) enable_v2bx; before_show_menu ;;
+        11) disable_v2bx; before_show_menu ;;
+        12) show_version; before_show_menu ;;
+        13) update_shell; before_show_menu ;;
+        *) echo -e "${red}请输入正确的数字 [0-13]。${plain}"; before_show_menu ;;
     esac
 }
 
@@ -319,6 +329,7 @@ case "${1:-menu}" in
     enable) enable_v2bx ;;
     disable) disable_v2bx ;;
     log) show_log ;;
+    errlog|errorlog) show_error_log ;;
     version) show_version ;;
     uninstall) uninstall_v2bx ;;
     update_shell) update_shell ;;

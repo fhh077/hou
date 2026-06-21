@@ -454,6 +454,7 @@ main() {
   V2bX              打开交互菜单
   V2bX status       查看状态
   V2bX log          查看日志
+  V2bX errlog       查看异常日志
   V2bX config       修改配置
   V2bX restart      重启服务
 
