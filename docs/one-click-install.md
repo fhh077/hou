@@ -67,6 +67,8 @@ dist/V2bX-linux-arm64-v8a.zip
 /usr/bin/v2bx                    # 小写入口
 ```
 
+默认 systemd 服务显式使用 `--watch=false`，避免主配置文件被编辑或管理工具保存时触发热重载导致监听短暂断开。修改 `/etc/V2bX/config.json` 后请执行 `V2bX restart`；只有确认需要热重载并能接受短暂连接影响时，才手动把启动参数改为 `--watch=true`。
+
 ## 管理命令
 
 ```bash
@@ -89,4 +91,5 @@ V2bX uninstall
 2. 执行 `V2bX log`，确认没有 `401`、`Invalid request`、`unsupported sspanel node sort`。
 3. 在面板后台确认节点在线。
 4. 使用客户端订阅连接节点，产生流量后确认用户 `u/d` 和在线 IP 更新。
-5. 重启服务器后确认 `systemctl is-enabled V2bX` 返回 `enabled`。
+5. 执行 `systemctl cat V2bX`，确认 `ExecStart` 包含 `--watch=false`。
+6. 重启服务器后确认 `systemctl is-enabled V2bX` 返回 `enabled`。

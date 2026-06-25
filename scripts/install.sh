@@ -338,7 +338,7 @@ Group=root
 Type=simple
 LimitNOFILE=999999
 WorkingDirectory=/usr/local/V2bX/
-ExecStart=/usr/local/V2bX/V2bX server -c /etc/V2bX/config.json
+ExecStart=/usr/local/V2bX/V2bX server -c /etc/V2bX/config.json --watch=false
 Restart=on-failure
 RestartSec=10
 
