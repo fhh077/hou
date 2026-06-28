@@ -7,7 +7,7 @@ green='\033[0;32m'
 yellow='\033[0;33m'
 plain='\033[0m'
 
-DEFAULT_REPO="OWNER/REPO"
+DEFAULT_REPO="fhh077/hou"
 DEFAULT_BRANCH="main"
 V2BX_REPO="${V2BX_REPO:-$DEFAULT_REPO}"
 V2BX_BRANCH="${V2BX_BRANCH:-$DEFAULT_BRANCH}"
@@ -27,11 +27,11 @@ usage() {
 V2bX 一键安装脚本
 
 用法:
-  bash install.sh --repo owner/repo [--branch master]
-  V2BX_REPO=owner/repo bash install.sh
+  bash install.sh --repo fhh077/hou [--branch main]
+  V2BX_REPO=fhh077/hou bash install.sh
 
 参数:
-  --repo       GitHub 仓库，例如 yourname/V2bX
+  --repo       公开发布仓库，例如 fhh077/hou
   --branch     脚本和 dist 包所在分支，默认 main
   --version    可选：指定 GitHub Release 版本；不传则从公开仓库 dist/ 下载
   -h, --help   查看帮助
@@ -71,10 +71,10 @@ require_root() {
 }
 
 require_repo() {
-    if [[ -z "$V2BX_REPO" || "$V2BX_REPO" == "$DEFAULT_REPO" ]]; then
-        echo -e "${red}未配置 GitHub 仓库。${plain}"
-        echo "请使用: V2BX_REPO=你的用户名/仓库名 bash install.sh"
-        echo "或使用: bash install.sh --repo 你的用户名/仓库名"
+    if [[ -z "$V2BX_REPO" || "$V2BX_REPO" != */* ]]; then
+        echo -e "${red}未配置公开发布仓库。${plain}"
+        echo "请使用: V2BX_REPO=fhh077/hou bash install.sh"
+        echo "或使用: bash install.sh --repo fhh077/hou"
         exit 1
     fi
 }
@@ -424,7 +424,7 @@ main() {
     else
         echo -e "${green}开始安装 V2bX dist/${asset_name}${plain}"
     fi
-    echo "GitHub 仓库: ${V2BX_REPO}"
+    echo "公开发布仓库: ${V2BX_REPO}"
     echo "系统架构产物: V2bX-${asset_name}.zip"
 
     install_files "$version" "$asset_name"

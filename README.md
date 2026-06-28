@@ -15,41 +15,45 @@ dist/SHA256SUMS.txt     # 安装包校验值
 
 ## 一键安装
 
-
 ```bash
-bash <(curl -Ls https://raw.githubusercontent.com/fhh077/hou/main/scripts/install.sh) --repo fhh077/hou
+bash <(curl -Ls https://raw.githubusercontent.com/fhh077/hou/main/scripts/install.sh)
 ```
 
-
-
-```bash
-bash <(curl -Ls https://raw.githubusercontent.com/fhh077/hou/master/scripts/install.sh) --repo fhh077/hou --branch master
-```
-
-安装脚本会自动完成：
-
-- 下载 `dist/V2bX-linux-64.zip`
-- 解压到 `/usr/local/V2bX`
-- 生成或保留 `/etc/V2bX/config.json`
-- 写入 `/etc/systemd/system/V2bX.service`
-- 安装 `/usr/bin/V2bX` 管理脚本
-- 执行 `systemctl enable V2bX.service`
-- 配置有效时自动启动服务
-
-## 管理命令
+也可以显式指定公开发布仓库：
 
 ```bash
-V2bX                 # 打开交互菜单
-V2bX config          # 修改配置
-V2bX start           # 启动
-V2bX stop            # 停止
-V2bX restart         # 重启
-V2bX status          # 查看状态
-V2bX log             # 查看日志
-V2bX enable          # 设置开机自启
-V2bX disable         # 取消开机自启
-V2bX update          # 从 dist/ 重新安装当前公开包
-V2bX uninstall       # 卸载
+V2BX_REPO=fhh077/hou V2BX_BRANCH=main bash <(curl -Ls https://raw.githubusercontent.com/fhh077/hou/main/scripts/install.sh)
 ```
 
-详细说明见 [docs/one-click-install.md](docs/one-click-install.md)。
+指定版本安装时，安装脚本会从 GitHub Release 下载对应版本产物：
+
+```bash
+bash <(curl -Ls https://raw.githubusercontent.com/fhh077/hou/main/scripts/install.sh) --version v0.4.0
+```
+
+不指定版本时，安装脚本会从 `dist/V2bX-当前架构.zip` 下载公开构建产物。
+
+## 安装后管理
+
+```bash
+V2bX              # 打开交互菜单
+V2bX status       # 查看状态
+V2bX log          # 查看实时日志
+V2bX errlog       # 查看异常日志
+V2bX config       # 修改配置
+V2bX restart      # 重启服务
+V2bX update       # 更新到 dist 中的最新构建
+V2bX update v0.4.0 # 更新到指定 Release 版本
+```
+
+## 校验安装包
+
+```bash
+cd dist
+sha256sum -c SHA256SUMS.txt
+```
+
+## 公开边界
+
+- 本仓库只放安装脚本、管理脚本、systemd service、文档和编译后的 zip。
+- 私有源码、测试、项目规则、开发脚本和内部配置不应上传到本仓库。

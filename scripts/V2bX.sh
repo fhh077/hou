@@ -21,7 +21,7 @@ V2BX_BRANCH="${V2BX_BRANCH:-V2BX_BRANCH_PLACEHOLDER}"
 ERROR_LOG_PATTERN='错误|失败|异常|拒绝|限制|超限|重载|关闭|找不到|不存在|不支持|无效|回滚|error|warn|warning|fatal|panic|limited|reject|failed|failure|node changed|user sync will delete|same user changed|close existing user links|device limit|over.?limit'
 
 if [[ "$V2BX_REPO" == "V2BX_REPO_PLACEHOLDER" ]]; then
-    V2BX_REPO="OWNER/REPO"
+    V2BX_REPO="fhh077/hou"
 fi
 
 if [[ "$V2BX_BRANCH" == "V2BX_BRANCH_PLACEHOLDER" ]]; then
@@ -105,9 +105,9 @@ run_installer() {
         version_arg="--version '$1'"
     fi
 
-    if [[ "$V2BX_REPO" == "OWNER/REPO" ]]; then
-        echo -e "${red}未配置 GitHub 仓库。${plain}"
-        echo "请使用: V2BX_REPO=你的用户名/仓库名 V2bX install"
+    if [[ "$V2BX_REPO" != */* ]]; then
+        echo -e "${red}未配置公开发布仓库。${plain}"
+        echo "请使用: V2BX_REPO=fhh077/hou V2BX_BRANCH=main V2bX install"
         return 1
     fi
 
@@ -217,8 +217,8 @@ show_version() {
 }
 
 update_shell() {
-    if [[ "$V2BX_REPO" == "OWNER/REPO" ]]; then
-        echo -e "${red}未配置 GitHub 仓库，无法更新管理脚本。${plain}"
+    if [[ "$V2BX_REPO" != */* ]]; then
+        echo -e "${red}未配置公开发布仓库，无法更新管理脚本。${plain}"
         return 1
     fi
     curl -fsSL "https://raw.githubusercontent.com/${V2BX_REPO}/${V2BX_BRANCH}/scripts/V2bX.sh" -o "$MANAGER_FILE"
@@ -266,15 +266,15 @@ V2bX version         查看版本
 V2bX uninstall       卸载 V2bX
 V2bX update_shell    更新管理脚本
 ------------------------------------------
-可通过环境变量指定仓库:
-V2BX_REPO=owner/repo V2BX_BRANCH=main V2bX install
+默认公开发布仓库:
+V2BX_REPO=fhh077/hou V2BX_BRANCH=main
 EOF
 }
 
 show_menu() {
     clear
     echo -e "${green}V2bX 后端管理脚本${plain}"
-    echo "GitHub 仓库: ${V2BX_REPO}  分支: ${V2BX_BRANCH}"
+    echo "公开发布仓库: ${V2BX_REPO}  分支: ${V2BX_BRANCH}"
     echo "------------------------------------------"
     echo -e "${green}0.${plain} 修改配置"
     echo -e "${green}1.${plain} 安装 V2bX"
